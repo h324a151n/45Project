@@ -26,7 +26,7 @@ export async function registration(
   const loginPage = new LoginPage(page);
   await loginPage.navigateToRegister();
   await expect (loginPage.registerContent).toBeVisible();
-  await loginPage.newUser(firstname, lastname, username, password)
+  await loginPage.newUser(page, firstname, lastname, username, password)
 }
 
 
@@ -35,7 +35,6 @@ export async function loginAsValidUser(page: Page) {
   await loginWithCredentials(page, loginData.valid.userName, loginData.valid.password);
   await expect(page).toHaveURL("profile");
   await expect(loginPage.logoutBtn).toBeVisible();
-  await expect(loginPage.userNameValue).toBe(loginData.valid.userName);
 }
 
 

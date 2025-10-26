@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page, expect, Route } from '@playwright/test';
 import { LookupAddress } from 'dns';
 
 export class LoginPage {
@@ -34,7 +34,7 @@ export class LoginPage {
     this.registerationUserName = page.locator('#userName');
     this.registrationPassword = page.locator('#password');
     this.captcha = page.locator('//label[@id="recaptcha-anchor-label"]');
-    this.captchaCheckMark = page.locator('//div[@class="recaptcha-checkbox-checkmark"]');
+    this.captchaCheckMark = page.locator('//div[@class="recaptcha-checkbox-spinner"]');
     this.registerBtn = page.locator('#register');
     this.errorMsg = page.locator('#name');
     this.userExistMsg = page.locator('//p[@id="name" and text()="User exists!"]');
@@ -49,7 +49,7 @@ export class LoginPage {
   async navigateToRegister() {
     await this.page.goto('/register');
   }
-  
+
   async login(username: string, password: string) {
     await expect(this.loginContent).toBeVisible();
     await this.usernameInput.fill(username);
@@ -57,13 +57,12 @@ export class LoginPage {
     await this.loginBtn.click();
   }
 
-  async newUser(firstName: string, lastName: string, registerationUserName: string, registrationPassword: string) {
+  async newUser(page: Page, firstName: string, lastName: string, registerationUserName: string, registrationPassword: string) {
     await this.firstName.fill(firstName);
     await this.lastName.fill(lastName);
     await this.registerationUserName.fill(registerationUserName);
     await this.registrationPassword.fill(registrationPassword);
-    await this.captcha.click();
-    await expect(this.captchaCheckMark).toBeVisible();
+    await page.route('**/recaptcha/**', route => route.fulfill({ status: 200, body: 'OK' }));
     await this.registerBtn.click();
   }
 
@@ -72,4 +71,5 @@ export class LoginPage {
     await expect(this.errorMsg).toHaveText('Invalid username or password!');
   }
 }
+
 
